@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { SearchOutlined } from '@ant-design/icons';
+import { Button, Flex, Tooltip } from 'antd';
 import Footer from "./Footer"
 
 export default function App() {
@@ -19,17 +21,27 @@ export default function App() {
         };
         fetchWeather();
     }, [city]);
+
+    useEffect(() => {
+        const fetchLocation = async() => {
+            
+        };
+        fetchLocation();
+    }, []);
     return (
         <div>
             <div>
                 <label>天気を検索</label>
-                <input id="inputfield" placeholder="検索"></input>
-                <button onClick={() => {
+                <input id="inputfield" placeholder="場所"></input>
+                <Button icon={<SearchOutlined />}
+                onClick={()=>{
                     setCity(document.querySelector("#inputfield").value);
+                    if (city === "") {
+                        setCity("tokyo");
+                    }
+                    setWeatherData(null);
                     fetchWeather();
-                }}>
-                    検索
-                </button>
+                }}>検索</Button>
             </div>
             {weatherData ? (
                 <div>
