@@ -29,15 +29,16 @@ async function fetchLocation(){
 export default function App() {
     const [weatherData, setWeatherData] = useState(null);
     const [city, setCity] = useState('tokyo');
+    const key = '7eb57afc13ef435abae92509242912';
     useEffect(() => {
         const fetchWeather = async () => {
             try {
-                const response = await fetch(`https://goweather.herokuapp.com/weather/${city}`);
+                const response = await fetch(`http://api.weatherapi.com/v1/current.json?key=${key}&q=${city}&aqi=no`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                setWeatherData(data);
+                setWeatherData(data.current);
             } catch (error) {
                 console.error('Error fetching weather data:', error);
             }
@@ -81,10 +82,12 @@ export default function App() {
                 <div>
                     <main>
                         <h1>Weather in {city}</h1>
-                        <p>Temperature:{weatherData.temperature}</p>
-                        <p>Wind: {weatherData.wind}</p>
-                        <p>Description: {weatherData.description}</p>
+                        <p>Update time: {weatherData.last_update}</p>
+                        <p>Temperature:{weatherData.temp_c}</p>
+                        <p>Wind: {weatherData.wind_kph}</p>
+                        <p>Description: {weatherData.condition.text}</p>
                     </main>
+                    {/*
                     <aside>
                         <h2>Forecast:</h2>
                         <ul> {weatherData.forecast.map((day, index) => (
@@ -94,6 +97,7 @@ export default function App() {
                         ))}
                         </ul>
                     </aside>
+                    */}
                 </div>) : (<p>Loading...</p>)}
             <Footer />
         </div>
