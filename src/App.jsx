@@ -23,7 +23,7 @@ async function fetchLocation(){
     } else {
         placeName = 'Geolocation not supported';
     }
-    return placeName;
+    return await placeName;
 }
 
 export default function App() {
@@ -49,7 +49,7 @@ export default function App() {
         const location = async () => {
             setCity(await fetchLocation());
             setWeatherData(null);
-            fetchWeather();
+            await fetchWeather();
         };
         location();
     }, []);
@@ -60,19 +60,19 @@ export default function App() {
                 <label>天気を検索</label>
                 <input id="inputfield" placeholder="場所"></input>
                 <Button icon={<SearchOutlined />}
-                    onClick={() => {
+                    onClick={async() => {
                         setCity(document.querySelector("#inputfield").value);
                         if (city === "") {
                             setCity("tokyo");
                         }
                         setWeatherData(null);
-                        fetchWeather();
+                        await fetchWeather();
                     }}>
                     検索
                 </Button>
                 <Button icon={<AimOutlined />}
-                    onClick={()=>{
-                        location();
+                    onClick={async()=>{
+                        await location();
                     }}>
                     現在地
                 </Button>

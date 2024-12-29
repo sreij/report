@@ -6,7 +6,9 @@ export default function Footer() {
             <div>
                 <h3>使用API</h3>
                 <ul>
-                    <li></li>
+                    <li>Ant-Design</li>
+                    <li>GeoLocation</li>
+                    <li>GeoNames</li>
                 </ul>
             </div>
         </footer>
