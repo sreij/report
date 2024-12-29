@@ -4,56 +4,47 @@ import { Button } from 'antd';
 import Footer from "./Footer"
 
 async function fetchLocation(){
-    let placeName;
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
             const { latitude, longitude } = position.coords;
             try {
                 const response = await fetch(`/.netlify/functions/getLocation?lat=${latitude}&lon=${longitude}`);
                 const data = await response.json();
-                placeName = data.placeName;
+                return data.placeName;
             } catch (error) {
                 console.error('Error fetching place name:', error);
-                placeName = 'Error fetching place name';
+                return 'Error fetching place name';
             }
         }, (error) => {
             console.error('Error getting location:', error);
-            placeName = 'Error getting location';
+            return 'Error getting location';
         });
     } else {
-        placeName = 'Geolocation not supported';
+        return 'Geolocation not supported';
     }
-    return await placeName;
 }
 
 export default function App() {
     const [weatherData, setWeatherData] = useState(null);
-    const [city, setCity] = useState('tokyo');
+    const [city, setCity] = useState('Tokyo');
     const key = '7eb57afc13ef435abae92509242912';
-    useEffect(() => {
-        const fetchWeather = async () => {
-            try {
-                const response = await fetch(`http://api.weatherapi.com/v1/current.json?key=${key}&q=${city}&aqi=no`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setWeatherData(data.current);
-            } catch (error) {
-                console.error('Error fetching weather data:', error);
+
+    const fetchWeather = async (city) => {
+        try {
+            const response = await fetch(`http://api.weatherapi.com/v1/current.json?key=${key}&q=${city}&aqi=no`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        };
-        fetchWeather();
-    }, [city]);
+            const data = await response.json();
+            setWeatherData(data);
+        } catch (error) {
+            console.error('Error fetching weather data:', error);
+        }
+    };
 
     useEffect(() => {
-        const location = async () => {
-            setCity(await fetchLocation());
-            setWeatherData(null);
-            await fetchWeather();
-        };
-        location();
-    }, []);
+        fetchWeather(city);
+    }, [city]);
 
     return (
         <div>
@@ -61,19 +52,24 @@ export default function App() {
                 <label>天気を検索</label>
                 <input id="inputfield" placeholder="場所"></input>
                 <Button icon={<SearchOutlined />}
-                    onClick={async() => {
-                        setCity(document.querySelector("#inputfield").value);
-                        if (city === "") {
-                            setCity("tokyo");
+                    onClick={async () => {
+                        const newCity = document.querySelector("#inputfield").value;
+                        if (newCity === "") {
+                            setCity("Tokyo");
+                        } else {
+                            setCity(newCity);
                         }
                         setWeatherData(null);
-                        await fetchWeather();
+                        await fetchWeather(newCity);
                     }}>
                     検索
                 </Button>
                 <Button icon={<AimOutlined />}
-                    onClick={async()=>{
-                        await location();
+                    onClick={async () => {
+                        const location = await fetchLocation();
+                        setCity(location);
+                        setWeatherData(null);
+                        await fetchWeather(location);
                     }}>
                     現在地
                 </Button>
@@ -82,12 +78,12 @@ export default function App() {
                 <div>
                     <main>
                         <h1>Weather in {city}</h1>
-                        <p>Update time: {weatherData.last_update}</p>
-                        <p>Temperature:{weatherData.temp_c}</p>
-                        <p>Wind: {weatherData.wind_kph}</p>
-                        <p>Description: {weatherData.condition.text}</p>
+                        <p>Update time: {weatherData.current.last_updated}</p>
+                        <p>Temperature: {weatherData.current.temp_c}°C</p>
+                        <p>Wind: {weatherData.current.wind_kph} kph</p>
+                        <p>Description: {weatherData.current.condition.text}</p>
                     </main>
-                    {/*
+                    {/* 
                     <aside>
                         <h2>Forecast:</h2>
                         <ul> {weatherData.forecast.map((day, index) => (
@@ -98,8 +94,11 @@ export default function App() {
                         </ul>
                     </aside>
                     */}
-                </div>) : (<p>Loading...</p>)}
+                </div>
+            ) : (
+                <p>Loading...</p>
+            )}
             <Footer />
         </div>
     );
-};
+}
