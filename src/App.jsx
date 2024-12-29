@@ -47,7 +47,7 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            setCity(await fetchLocation());
+            await fetchLocation();
         })();
     }, []);
 
@@ -65,11 +65,11 @@ export default function App() {
                         setWeatherData(null);
                         fetchWeather();
                     }}>
-                        検索
+                    検索
                 </Button>
                 <Button icon={<AimOutlined />}
                     onClick={()=>{
-                        fetchLocation();
+                        setCity(fetchLocation());
                         setWeatherData(null);
                         fetchWeather();
                     }}>
