@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { SearchOutlined, AimOutlined } from '@ant-design/icons';
-import { Button, Flex, Tooltip } from 'antd';
+import { Button } from 'antd';
 import Footer from "./Footer"
 
 async function fetchLocation(){
@@ -46,11 +46,12 @@ export default function App() {
     }, [city]);
 
     useEffect(() => {
-        (async function location(){
+        const location = async () => {
             setCity(await fetchLocation());
             setWeatherData(null);
             fetchWeather();
-        });
+        };
+        location();
     }, []);
 
     return (
