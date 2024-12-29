@@ -28,7 +28,7 @@ async function fetchLocation(){
 
 export default function App() {
     const [weatherData, setWeatherData] = useState(null);
-    const [city, setCity] = useState('Tokyo');
+    const [city, setCity] = useState('tokyo');
     useEffect(() => {
         const fetchWeather = async () => {
             try {
@@ -46,9 +46,11 @@ export default function App() {
     }, [city]);
 
     useEffect(() => {
-        (async () => {
-            await fetchLocation();
-        })();
+        (async function location(){
+            setCity(await fetchLocation());
+            setWeatherData(null);
+            fetchWeather();
+        });
     }, []);
 
     return (
@@ -69,9 +71,7 @@ export default function App() {
                 </Button>
                 <Button icon={<AimOutlined />}
                     onClick={()=>{
-                        setCity(fetchLocation());
-                        setWeatherData(null);
-                        fetchWeather();
+                        location();
                     }}>
                     現在地
                 </Button>
