@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, AimOutlined } from '@ant-design/icons';
 import { Button, Flex, Tooltip } from 'antd';
 import Footer from "./Footer"
 
@@ -23,25 +23,60 @@ export default function App() {
     }, [city]);
 
     useEffect(() => {
-        const fetchLocation = async() => {
-            
+        const fetchLocation = async () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setLocation({ latitude, longitude });
+                    try {
+                        const response = await fetch('/.netlify/functions/getLocation', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ latitude, longitude }),
+                        });
+                        const data = await response.json();
+                        setCity(data.placeName);
+                    } catch (error) {
+                        console.error('Error fetching place name:', error);
+                        setCity('Error fetching place name');
+                    }
+                }, (error) => {
+                    console.error('Error getting location:', error);
+                    setCity('Error getting location');
+                });
+            } else {
+                setCity('Geolocation not supported');
+            }
         };
         fetchLocation();
     }, []);
+
     return (
         <div>
             <div>
                 <label>天気を検索</label>
                 <input id="inputfield" placeholder="場所"></input>
                 <Button icon={<SearchOutlined />}
-                onClick={()=>{
-                    setCity(document.querySelector("#inputfield").value);
-                    if (city === "") {
-                        setCity("tokyo");
-                    }
-                    setWeatherData(null);
-                    fetchWeather();
-                }}>検索</Button>
+                    onClick={() => {
+                        setCity(document.querySelector("#inputfield").value);
+                        if (city === "") {
+                            setCity("tokyo");
+                        }
+                        setWeatherData(null);
+                        fetchWeather();
+                    }}>
+                        検索
+                </Button>
+                <Button icon={<AimOutlined />}
+                    onClick={()=>{
+                        fetchLocation();
+                        setWeatherData(null);
+                        fetchWeather();
+                    }}>
+                    現在地
+                </Button>
             </div>
             {weatherData ? (
                 <div>

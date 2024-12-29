@@ -1,9 +1,8 @@
 export async function handler(event, context) {
     const { latitude, longitude } = JSON.parse(event.body);
-    const username = 'YOUR_GEONAMES_USERNAME';
-
+    const username = 'chrj23020';
     try {
-        const response = await fetch(`https://secure.geonames.org/findNearbyPlaceNameJSON?lat=${latitude}&lng=${longitude}&username=${username}`);
+        const response = await fetch(`http://api.geonames.org/findNearbyPlaceNameJSON?lat=${latitude}&lng=${longtude}&username=${username}`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
