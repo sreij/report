@@ -27,7 +27,6 @@ export default function App() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
                     const { latitude, longitude } = position.coords;
-                    setLocation({ latitude, longitude });
                     try {
                         const response = await fetch('/.netlify/functions/getLocation', {
                             method: 'POST',
