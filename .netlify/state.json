@@ -1,0 +1,20 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Yokohama",
+			"country": {
+				"code": "JP",
+				"name": "Japan"
+			},
+			"subdivision": {
+				"code": "14",
+				"name": "Kanagawa"
+			},
+			"timezone": "Asia/Tokyo",
+			"latitude": 35.4346,
+			"longitude": 139.6483,
+			"postalCode": "231-0841"
+		},
+		"timestamp": 1735454738335
+	}
+}

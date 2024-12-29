@@ -3,6 +3,29 @@ import { SearchOutlined, AimOutlined } from '@ant-design/icons';
 import { Button, Flex, Tooltip } from 'antd';
 import Footer from "./Footer"
 
+async function fetchLocation(){
+    let placeName;
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+            try {
+                const response = await fetch(`/.netlify/functions/getLocation?lat=${latitude}&lon=${longitude}`);
+                const data = await response.json();
+                placeName = data.placeName;
+            } catch (error) {
+                console.error('Error fetching place name:', error);
+                placeName = 'Error fetching place name';
+            }
+        }, (error) => {
+            console.error('Error getting location:', error);
+            placeName = 'Error getting location';
+        });
+    } else {
+        placeName = 'Geolocation not supported';
+    }
+    return placeName;
+}
+
 export default function App() {
     const [weatherData, setWeatherData] = useState(null);
     const [city, setCity] = useState('Tokyo');
@@ -23,33 +46,9 @@ export default function App() {
     }, [city]);
 
     useEffect(() => {
-        const fetchLocation = async () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const { latitude, longitude } = position.coords;
-                    try {
-                        const response = await fetch('/.netlify/functions/getLocation', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ latitude, longitude }),
-                        });
-                        const data = await response.json();
-                        setCity(data.placeName);
-                    } catch (error) {
-                        console.error('Error fetching place name:', error);
-                        setCity('Error fetching place name');
-                    }
-                }, (error) => {
-                    console.error('Error getting location:', error);
-                    setCity('Error getting location');
-                });
-            } else {
-                setCity('Geolocation not supported');
-            }
-        };
-        fetchLocation();
+        (async () => {
+            setCity(await fetchLocation());
+        })();
     }, []);
 
     return (

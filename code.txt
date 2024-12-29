@@ -1,7 +1,5 @@
-export default async (req) => {
-    const params = new URL(req.url).searchParams;
-    const latitude = +params.get('lat');
-    const longitude = +params.get('lon');
+export default async (event, context) => {
+    const { latitude, longitude } = JSON.parse(event.body);
     const username = 'chrj23020';
     try {
         const response = await fetch(`http://api.geonames.org/findNearbyPlaceNameJSON?lat=${latitude}&lng=${longitude}&username=${username}`);
@@ -11,10 +9,14 @@ export default async (req) => {
         const data = await response.json();
         const placeName = data.geonames && data.geonames.length > 0 ? data.geonames[0].name : 'Location not found';
 
-        return new Response(json.stringify({placeName: {placeName}}));
+        return new Response({
+            statusCode: 200,
+            body: JSON.stringify({ placeName }),
+        });
     } catch (error) {
-        return new Response( json.stringify({
-            placeName: JSON.stringify({ error: error.message })
-        }));
+        return new Response( {
+            statusCode: 500,
+            body: JSON.stringify({ error: error.message }),
+        });
     }
 };
