@@ -3,7 +3,7 @@ import { SearchOutlined, AimOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import Footer from "./Footer"
 
-async function fetchLocation(){
+async function fetchLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
             const { latitude, longitude } = position.coords;
@@ -74,16 +74,15 @@ export default function App() {
                     現在地
                 </Button>
             </div>
-            {weatherData ? (
-                <div>
-                    <main>
-                        <h1>Weather in {city}</h1>
-                        <p>Update time: {weatherData.current.last_updated}</p>
-                        <p>Temperature: {weatherData.current.temp_c}°C</p>
-                        <p>Wind: {weatherData.current.wind_kph} kph</p>
-                        <p>Description: {weatherData.current.condition.text}</p>
-                    </main>
-                    {/* 
+            <div>
+                <main>
+                    <h1>Weather in {city}</h1>
+                    <p>Update time: {weatherData.current.last_updated}</p>
+                    <p>Temperature: {weatherData.current.temp_c}°C</p>
+                    <p>Wind: {weatherData.current.wind_kph} kph</p>
+                    <p>Description: {weatherData.current.condition.text}</p>
+                </main>
+                {/* 
                     <aside>
                         <h2>Forecast:</h2>
                         <ul> {weatherData.forecast.map((day, index) => (
@@ -94,10 +93,7 @@ export default function App() {
                         </ul>
                     </aside>
                     */}
-                </div>
-            ) : (
-                <p>Loading...</p>
-            )}
+            </div>
             <Footer />
         </div>
     );
